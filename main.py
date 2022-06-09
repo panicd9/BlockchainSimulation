@@ -51,8 +51,8 @@ def proof_of_work_block(block: Block):
     nonce = 0
     data_to_hash = json.dumps(block.transactions) + str(nonce)
     hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
-    while hash_to_find[0:4] != "0000":
-        print(hash_to_find[0:4])
+    while hash_to_find[0:3] != "000":
+        print(hash_to_find[0:3])
         data_to_hash = json.dumps(block.transactions) + str(nonce)
         hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
         print("Nonce:" + str(nonce))
@@ -60,44 +60,44 @@ def proof_of_work_block(block: Block):
         nonce = nonce + 1
 
 
-from datetime import datetime
-
-transactions = []
-transaction_data = {'from': 'Darko', 'to': 'Igor', 'value': '30', 'timestamp': '2011-11-04 00:05:23.111'}
-transactions.append(transaction_data)
-transaction_data = {'from': 'Igor', 'to': 'Stefan', 'value': '10', 'timestamp': '2012-11-07 00:05:13.222'}
-transactions.append(transaction_data)
-transaction_data = {'from': 'Stefan', 'to': 'Darko', 'value': '10', 'timestamp': '2013-11-09 00:11:13.333'}
-transactions.append(transaction_data)
-transaction_data = {'from': 'Darko', 'to': 'Stefan', 'value': '20', 'timestamp': '2014-11-04 00:05:23.111'}
-transactions.append(transaction_data)
-transaction_data = {'from': 'Stefan', 'to': 'Igor', 'value': '5', 'timestamp': '2015-11-07 00:05:13.222'}
-transactions.append(transaction_data)
-transaction_data = {'from': 'Stefan', 'to': 'Darko', 'value': '10', 'timestamp': '2016-11-09 00:11:13.333'}
-transactions.append(transaction_data)
-
-timestamp_0 = datetime.timestamp(datetime.fromisoformat('2011-11-04 00:05:23.111'))
-
-block_0 = Block(
-    transactions=transactions[0],
-    timestamp=timestamp_0
-)
-
-timestamp_1 = datetime.timestamp(datetime.fromisoformat('2011-11-07 00:05:13.222'))
-block_1 = Block(
-    transactions=transactions[1],
-    timestamp=timestamp_1,
-    previous_block=block_0
-)
-
-timestamp_2 = datetime.timestamp(datetime.fromisoformat('2011-11-09 00:11:13.333'))
-block_2 = Block(
-    transactions=transactions[2],
-    timestamp=timestamp_2,
-    previous_block=block_1
-)
-
 if __name__ == "__main__":
+    from datetime import datetime
+
+    transactions = []
+    transaction_data = {'from': 'Darko', 'to': 'Igor', 'value': '30', 'timestamp': '2011-11-04 00:05:23.111'}
+    transactions.append(transaction_data)
+    transaction_data = {'from': 'Igor', 'to': 'Stefan', 'value': '10', 'timestamp': '2012-11-07 00:05:13.222'}
+    transactions.append(transaction_data)
+    transaction_data = {'from': 'Stefan', 'to': 'Darko', 'value': '10', 'timestamp': '2013-11-09 00:11:13.333'}
+    transactions.append(transaction_data)
+    transaction_data = {'from': 'Darko', 'to': 'Stefan', 'value': '20', 'timestamp': '2014-11-04 00:05:23.111'}
+    transactions.append(transaction_data)
+    transaction_data = {'from': 'Stefan', 'to': 'Igor', 'value': '5', 'timestamp': '2015-11-07 00:05:13.222'}
+    transactions.append(transaction_data)
+    transaction_data = {'from': 'Stefan', 'to': 'Darko', 'value': '10', 'timestamp': '2016-11-09 00:11:13.333'}
+    transactions.append(transaction_data)
+
+    timestamp_0 = datetime.timestamp(datetime.fromisoformat('2011-11-04 00:05:23.111'))
+
+    block_0 = Block(
+        transactions=transactions[0],
+        timestamp=timestamp_0
+    )
+
+    timestamp_1 = datetime.timestamp(datetime.fromisoformat('2011-11-07 00:05:13.222'))
+    block_1 = Block(
+        transactions=transactions[1],
+        timestamp=timestamp_1,
+        previous_block=block_0
+    )
+
+    timestamp_2 = datetime.timestamp(datetime.fromisoformat('2011-11-09 00:11:13.333'))
+    block_2 = Block(
+        transactions=transactions[2],
+        timestamp=timestamp_2,
+        previous_block=block_1
+    )
+
     b = blockchain.Blockchain()
     b.append_block(block_0)
     b.append_block(block_1)
