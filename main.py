@@ -2,6 +2,8 @@ import json
 
 from Crypto.Hash import keccak
 
+import blockchain
+
 
 def calculate_hash(data: bytes) -> str:
     h = keccak.new(digest_bits=256)
@@ -40,18 +42,18 @@ class Block:
                     "\nHash: \n\t" + \
                     self.hash + \
                     "\nTransactions:\n\t" + \
-                    self.transactions + \
+                    json.dumps(self.transactions) + \
                     "\n"
         return to_string
 
 
-def proof_of_work(block: Block):
+def proof_of_work_block(block: Block):
     nonce = 0
-    data_to_hash = block.transactions + str(nonce)
+    data_to_hash = json.dumps(block.transactions) + str(nonce)
     hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
     while hash_to_find[0:4] != "0000":
         print(hash_to_find[0:4])
-        data_to_hash = block.transactions + str(nonce)
+        data_to_hash = json.dumps(block.transactions) + str(nonce)
         hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
         print("Nonce:" + str(nonce))
         print(hash_to_find)
@@ -60,31 +62,51 @@ def proof_of_work(block: Block):
 
 from datetime import datetime
 
+transactions = []
+transaction_data = {'from': 'Darko', 'to': 'Igor', 'value': '30', 'timestamp': '2011-11-04 00:05:23.111'}
+transactions.append(transaction_data)
+transaction_data = {'from': 'Igor', 'to': 'Stefan', 'value': '10', 'timestamp': '2012-11-07 00:05:13.222'}
+transactions.append(transaction_data)
+transaction_data = {'from': 'Stefan', 'to': 'Darko', 'value': '10', 'timestamp': '2013-11-09 00:11:13.333'}
+transactions.append(transaction_data)
+transaction_data = {'from': 'Darko', 'to': 'Stefan', 'value': '20', 'timestamp': '2014-11-04 00:05:23.111'}
+transactions.append(transaction_data)
+transaction_data = {'from': 'Stefan', 'to': 'Igor', 'value': '5', 'timestamp': '2015-11-07 00:05:13.222'}
+transactions.append(transaction_data)
+transaction_data = {'from': 'Stefan', 'to': 'Darko', 'value': '10', 'timestamp': '2016-11-09 00:11:13.333'}
+transactions.append(transaction_data)
+
 timestamp_0 = datetime.timestamp(datetime.fromisoformat('2011-11-04 00:05:23.111'))
-transaction_data_0 = "Albert,Bertrand,30"
+
 block_0 = Block(
-    transactions=transaction_data_0,
+    transactions=transactions[0],
     timestamp=timestamp_0
 )
 
 timestamp_1 = datetime.timestamp(datetime.fromisoformat('2011-11-07 00:05:13.222'))
-transaction_data_1 = "Albert,Camille,10"
 block_1 = Block(
-    transactions=transaction_data_1,
+    transactions=transactions[1],
     timestamp=timestamp_1,
     previous_block=block_0
 )
 
 timestamp_2 = datetime.timestamp(datetime.fromisoformat('2011-11-09 00:11:13.333'))
-transaction_data_2 = "Bertrand,Camille,5"
 block_2 = Block(
-    transactions=transaction_data_2,
+    transactions=transactions[2],
     timestamp=timestamp_2,
     previous_block=block_1
 )
 
-print(block_0)
-print(block_1)
-print(block_2)
+if __name__ == "__main__":
+    b = blockchain.Blockchain()
+    b.append_block(block_0)
+    b.append_block(block_1)
+    b.append_block(block_2)
 
-proof_of_work(block_0)
+    print('--------------------------')
+    print(block_0)
+    print(block_1)
+    print(block_2)
+    print('--------------------------')
+
+    b.proof_of_work()
