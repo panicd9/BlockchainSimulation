@@ -1,16 +1,18 @@
 import json
+from typing import List
 
 from cryptography import calculate_hash
+from transaction import Transaction
 
 
 class Block:
-    def __init__(self, timestamp: float, transactions: str, previous_block=None):
+    def __init__(self, timestamp: float, transactions: List[Transaction], previous_block=None):
         self.transactions = transactions
         self.timestamp = timestamp
         self.previous_block = previous_block
 
     @property
-    def previous_block_hash(self):
+    def previous_block_hash(self) -> str:
         previous_block_hash = ""
         if self.previous_block:
             previous_block_hash = self.previous_block.hash
@@ -23,7 +25,7 @@ class Block:
             "timestamp": self.timestamp,
             "previous_block_cryptographic_hash": self.previous_block_hash
         }
-        block_data_bytes = json.dumps(block_data, indent=2).encode('utf-8')
+        block_data_bytes = json.dumps(block_data, indent=4).encode('utf-8')
         # block_data_bytes = json.dumps(block_data).encode('utf-8')
         print(block_data_bytes)
         return calculate_hash(block_data_bytes)
@@ -45,7 +47,7 @@ class Block:
                     str(self.timestamp) + \
                     "\nHash: \n\t" + \
                     self.hash + \
-                    "\nTransactions:\n\t" + \
-                    json.dumps(self.transactions) + \
+                    "\nTransactions:\n" + \
+                    json.dumps(self.transactions, indent=4) + \
                     "\n"
         return to_string

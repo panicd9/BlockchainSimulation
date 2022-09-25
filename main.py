@@ -1,5 +1,14 @@
+import json
+
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import ECC
+from Crypto.Signature import DSS
+
 import blockchain
 from block import Block
+from node import Node
+from transaction import Transaction
+from wallet import initialize_wallet
 
 if __name__ == "__main__":
     from datetime import datetime
@@ -44,10 +53,34 @@ if __name__ == "__main__":
     b.append_block(block_1)
     b.append_block(block_2)
 
-    print('--------------------------------------------------------------')
-    print(block_0)
-    print(block_1)
-    print(block_2)
-    print('--------------------------------------------------------------')
+    # print('--------------------------------------------------------------')
+    # print(block_0)
+    # print(block_1)
+    # print(block_2)
+    # print('--------------------------------------------------------------')
 
-    b.proof_of_work()
+    # b.proof_of_work()
+
+    wallet1 = initialize_wallet()
+    wallet2 = initialize_wallet()
+
+    transaction = Transaction(wallet1, wallet2.public_key, 20)
+    transaction.sign()
+
+    node = Node(None)
+    # print("POTPIS TEST 1: " + transaction.signature)
+    print("PODACI TEST 1: " + str(bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8'))))
+    boolean = node.verify_signature(wallet1.public_key, transaction.signature,  bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8')))
+    #
+    print(boolean)
+    print("\n\n ajmo")
+
+    key = ECC.generate(curve='P-256')
+    h = SHA256.new(b"123")
+    signer = DSS.new(key, 'fips-186-3')
+    signature = signer.sign(h)
+    verifier = DSS.new(key.public_key(), 'fips-186-3')
+    verifier.verify(h, signature)
+    print(key)
+    print(key.public_key())
+
