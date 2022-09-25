@@ -28,16 +28,16 @@ class Transaction:
     def sign(self) -> str:
         # convert to bytes for hashing
         transaction_data = bytearray(json.dumps(self.generate_transaction_data(), indent=4).encode('utf-8'))
-        print("PODACI TEST 2: " + str(transaction_data))
+        # print("PODACI TEST 2: " + str(transaction_data))
         _hash = SHA256.new(transaction_data)
-        print("HASH TEST 2: " + str(_hash.hexdigest()))
-        print("javni: " + str(self.sender.public_key))
-        print("KLJUC 2: " + str(self.sender.private_key))
+        # print("HASH TEST 2: " + str(_hash.hexdigest()))
+        # print("javni: " + str(self.sender.public_key))
+        # print("KLJUC 2: " + str(self.sender.private_key))
         signer = DSS.new(self.sender.private_key, 'fips-186-3')
         self.signature = signer.sign(_hash)
         # self.signature = binascii.hexlify(signature).decode("utf-8")
-        print("POTPIS TEST 2: " + str(self.signature))
-        print("PRIVAT TEST 2: " + str(self.sender.private_key))
+        # print("POTPIS TEST 2: " + str(self.signature))
+        # print("PRIVAT TEST 2: " + str(self.sender.private_key))
 
     def send(self):
         return {

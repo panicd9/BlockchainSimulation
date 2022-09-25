@@ -16,9 +16,9 @@ class Node:
     def verify_signature(public_key: bytes, signature: bytes, transaction_data: bytes):
         public_key = ECC.import_key(public_key)
         transaction_hash = SHA256.new(transaction_data)
-        print("PUBLIC TEST 1: " + str(public_key))
-        print("HASH TEST 1: " + str(transaction_hash.hexdigest()))
-        print("KLJUC 1: " + str(public_key))
+        # print("PUBLIC TEST 1: " + str(public_key))
+        # print("HASH TEST 1: " + str(transaction_hash.hexdigest()))
+        # print("KLJUC 1: " + str(public_key))
         return DSS.new(public_key, 'fips-186-3').verify(transaction_hash, signature)
 
     def validate_funds(self, sender_address: bytes, amount: int) -> bool:
@@ -35,3 +35,14 @@ class Node:
             return True
         else:
             return False
+
+    def proof_of_work_test(self):
+        current_block = self.block
+        blockchain_from_start = []
+        while current_block:
+            blockchain_from_start.append(current_block)
+            current_block = current_block.previous_block
+        blockchain_from_start = list(reversed(blockchain_from_start))
+
+        for block in blockchain_from_start:
+            block.proof_of_work_block()

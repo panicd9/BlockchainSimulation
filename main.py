@@ -30,20 +30,20 @@ if __name__ == "__main__":
     timestamp_0 = datetime.timestamp(datetime.fromisoformat('2011-11-04 00:05:23.111'))
 
     block_0 = Block(
-        transactions=transactions[0],
+        transactions=transactions,
         timestamp=timestamp_0
     )
 
     timestamp_1 = datetime.timestamp(datetime.fromisoformat('2011-11-07 00:05:13.222'))
     block_1 = Block(
-        transactions=transactions[1],
+        transactions=transactions,
         timestamp=timestamp_1,
         previous_block=block_0
     )
 
     timestamp_2 = datetime.timestamp(datetime.fromisoformat('2011-11-09 00:11:13.333'))
     block_2 = Block(
-        transactions=transactions[2],
+        transactions=transactions,
         timestamp=timestamp_2,
         previous_block=block_1
     )
@@ -67,20 +67,22 @@ if __name__ == "__main__":
     transaction = Transaction(wallet1, wallet2.public_key, 20)
     transaction.sign()
 
-    node = Node(None)
-    # print("POTPIS TEST 1: " + transaction.signature)
-    print("PODACI TEST 1: " + str(bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8'))))
-    boolean = node.verify_signature(wallet1.public_key, transaction.signature,  bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8')))
-    #
-    print(boolean)
-    print("\n\n ajmo")
+    node = Node(block_2)
+    node.proof_of_work_test()
 
-    key = ECC.generate(curve='P-256')
-    h = SHA256.new(b"123")
-    signer = DSS.new(key, 'fips-186-3')
-    signature = signer.sign(h)
-    verifier = DSS.new(key.public_key(), 'fips-186-3')
-    verifier.verify(h, signature)
-    print(key)
-    print(key.public_key())
+    # # print("POTPIS TEST 1: " + transaction.signature)
+    # print("PODACI TEST 1: " + str(bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8'))))
+    # boolean = node.verify_signature(wallet1.public_key, transaction.signature,  bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8')))
+    # #
+    # print(boolean)
+    # print("\n\n ajmo")
+    #
+    # key = ECC.generate(curve='P-256')
+    # h = SHA256.new(b"123")
+    # signer = DSS.new(key, 'fips-186-3')
+    # signature = signer.sign(h)
+    # verifier = DSS.new(key.public_key(), 'fips-186-3')
+    # verifier.verify(h, signature)
+    # print(key)
+    # print(key.public_key())
 

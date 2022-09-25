@@ -20,12 +20,12 @@ def initialize_wallet():
     # print(private_key.export_key(format='DER'))
     # print(private_key.public_key().export_key(format='DER'))
     public_key = private_key.public_key().export_key(format='DER')
-    print("TESTIRANJE! : ")
-    print(public_key)
+    # print("TESTIRANJE! : ")
+    # print(public_key)
     _hash = calculate_hash(public_key)
-    print(_hash)
+    # print(_hash)
     address = _hash[-40:]
-    print('Adresa: ' + address)
+    # print('Adresa: ' + address)
     return Wallet(private_key, public_key, address)
 
 # def initialize_wallet():

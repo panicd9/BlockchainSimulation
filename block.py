@@ -10,16 +10,21 @@ class Block:
         self.transactions = transactions
         self.timestamp = timestamp
         self.previous_block = previous_block
+        self.previous_block_hash = ""
 
-    @property
-    def previous_block_hash(self) -> str:
-        previous_block_hash = ""
         if self.previous_block:
-            previous_block_hash = self.previous_block.hash
-        return previous_block_hash
+            self.previous_block_hash = previous_block.hash
+        self.hash = self.find_hash()
 
-    @property
-    def hash(self) -> str:
+    # @property
+    # def previous_block_hash(self) -> str:
+    #     previous_block_hash = ""
+    #     if self.previous_block:
+    #         previous_block_hash = self.previous_block_hash
+    #     return previous_block_hash
+
+    # @property
+    def find_hash(self) -> str:
         block_data = {
             "transaction_data": self.transactions,
             "timestamp": self.timestamp,
@@ -32,15 +37,17 @@ class Block:
 
     def proof_of_work_block(self):
         nonce = 0
-        data_to_hash = json.dumps(self.transactions) + str(nonce)
+        data_to_hash = self.hash + str(nonce)
         hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
         while hash_to_find[0:3] != "000":
-            print(hash_to_find[0:3])
-            data_to_hash = json.dumps(self.transactions) + str(nonce)
+            # print(hash_to_find[0:3])
+            data_to_hash = self.hash + str(nonce)
             hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
-            print("Nonce:" + str(nonce))
-            print(hash_to_find)
+            # print("Nonce:" + str(nonce))
+            # print(hash_to_find)
             nonce = nonce + 1
+        print("Nonce:" + str(nonce))
+        print(hash_to_find)
 
     def __str__(self):
         to_string = "Timestamp: \n\t" + \
