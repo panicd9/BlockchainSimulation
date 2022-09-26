@@ -12,10 +12,11 @@ from utils import address_from_public_key
 
 def nodeTransaction_object_from_json(transaction_json):
     transaction = NodeTransaction(transaction_json['sender_public_key'])
+    print(transaction_json['sender_public_key'])
     transaction.sender = ECC.import_key(transaction_json['sender_public_key'])
-    transaction.receiver_address = transaction_json['receiver']
+    transaction.receiver_address = transaction_json['receiver'][2:]
     transaction.amount = transaction_json['amount']
-    transaction.timestamp = transaction_json['timestamp']
+    transaction.timestamp = datetime.strptime(transaction_json['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
     transaction.signature = binascii.unhexlify(transaction_json['signature'])
 
     return transaction
@@ -32,7 +33,7 @@ class NodeTransaction:
 
     def generate_transaction_data(self) -> dict:
         return {
-            "sender": '0x' + self.sender_address,
+            "sender": '0x' + str(self.sender_address),
             "receiver": '0x' + str(self.receiver_address),
             "amount": str(self.amount),
             "timestamp": str(self.timestamp)
@@ -46,7 +47,7 @@ class NodeTransaction:
             "sender": '0x' + self.sender_address,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
-            "timestamp": self.timestamp,
+            "timestamp": str(self.timestamp),
             "signature": binascii.hexlify(self.signature).decode("utf-8")
         }
 

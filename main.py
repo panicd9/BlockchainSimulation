@@ -16,9 +16,10 @@ from wallet import initialize_wallet, import_wallet_from_file
 app = Flask(__name__)
 
 @app.route("/send_transaction", methods=['POST'])
-def validate_transaction():
+def send_transaction():
     transaction = nodeTransaction_object_from_json(request.json)
     try:
+        # print(transaction)
         node = Node(head_block)
         node.verify_signature(transaction)
         node.validate_funds(transaction.sender_address, transaction.amount)

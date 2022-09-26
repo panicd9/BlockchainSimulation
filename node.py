@@ -30,11 +30,14 @@ class Node:
     @staticmethod
     def verify_signature(transaction):
         transaction_data = bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8'))
+        print(transaction_data)
         transaction_hash = SHA256.new(transaction_data)
         # print("PUBLIC TEST 1: " + str(public_key))
         # print("HASH TEST 1: " + str(transaction_hash.hexdigest()))
         # print("KLJUC 1: " + str(public_key))
-        print(transaction.sender)
+        # print(transaction.sender)
+        # print(transaction.signature)
+        # print(transaction_hash)
         return DSS.new(transaction.sender, 'fips-186-3').verify(transaction_hash, transaction.signature)
 
     def validate_funds(self, sender_address: bytes, amount: int) -> bool:

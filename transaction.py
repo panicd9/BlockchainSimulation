@@ -10,10 +10,11 @@ from cryptography import calculate_hash
 
 def transaction_object_from_json(transaction_json):
     transaction = Transaction(None, None, None)
+    print(transaction_json['sender_public_key'])
     transaction.sender = ECC.import_key(transaction_json['sender_public_key'])
-    transaction.receiver_address = transaction_json['receiver']
+    transaction.receiver_address = transaction_json['receiver'][2:]
     transaction.amount = transaction_json['amount']
-    transaction.timestamp = transaction_json['timestamp']
+    transaction.timestamp = datetime.strptime(transaction_json['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
     transaction.signature = binascii.unhexlify(transaction_json['signature'])
 
     return transaction
@@ -39,13 +40,15 @@ class Transaction:
         # convert to bytes for hashing
         transaction_data = bytearray(json.dumps(self.generate_transaction_data(), indent=4).encode('utf-8'))
         # print("PODACI TEST 2: " + str(transaction_data))
+        print(self.sender.public_key)
+        print(transaction_data)
         _hash = SHA256.new(transaction_data)
         # print("HASH TEST 2: " + str(_hash.hexdigest()))
         # print("javni: " + str(self.sender.public_key))
         # print("KLJUC 2: " + str(self.sender.private_key))
         signer = DSS.new(self.sender.private_key, 'fips-186-3')
         self.signature = signer.sign(_hash)
-        print(self.signature)
+        # print(self.signature)
         # self.signature = binascii.hexlify(self.signature).decode("utf-8")
         # print(self.signature)
         # print("POTPIS TEST 2: " + str(self.signature))
@@ -57,13 +60,12 @@ class Transaction:
             signature = binascii.hexlify(self.signature).decode("utf-8")
         else:
             signature = ""
-
         return {
             "sender_public_key": self.sender.public_key,
             "sender": '0x' + self.sender.address,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
-            "timestamp": self.timestamp,
+            "timestamp": str(self.timestamp),
             "signature": signature
         }
 

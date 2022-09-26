@@ -23,10 +23,11 @@ class Wallet:
         return self.node.send_transaction(transaction.generate_transaction_data())
 
 def import_wallet_from_file(private_key: ECC.EccKey):
-    public_key = private_key.public_key().export_key(format='PEM')
+    public_key = private_key.public_key().export_key(format='DER')
     _hash = calculate_hash(public_key)
     address = _hash[-40:]
-    return Wallet(private_key, public_key, address)
+    public_key_pem = private_key.public_key().export_key(format='PEM')
+    return Wallet(private_key, public_key_pem, address)
 
 
 def initialize_wallet():
