@@ -8,7 +8,7 @@ import blockchain
 from block import Block
 from node import Node
 from transaction import Transaction
-from wallet import initialize_wallet
+from wallet import initialize_wallet, import_wallet_from_file
 
 if __name__ == "__main__":
     from datetime import datetime
@@ -61,10 +61,28 @@ if __name__ == "__main__":
 
     # b.proof_of_work()
 
-    wallet1 = initialize_wallet()
-    wallet2 = initialize_wallet()
+    f1 = open('./wallets/wallet_A_private.der', 'rb')
+    f2 = open('./wallets/wallet_B_private.der', 'rb')
+    f3 = open('./wallets/wallet_C_private.der', 'rb')
+    f4 = open('./wallets/wallet_D_private.der', 'rb')
+    f5 = open('./wallets/wallet_E_private.der', 'rb')
+    f6 = open('./wallets/wallet_F_private.der', 'rb')
 
-    transaction = Transaction(wallet1, wallet2.public_key, 20)
+    wallet_A = import_wallet_from_file(ECC.import_key(f1.read()))
+    wallet_B = import_wallet_from_file(ECC.import_key(f2.read()))
+    wallet_C = import_wallet_from_file(ECC.import_key(f3.read()))
+    wallet_D = import_wallet_from_file(ECC.import_key(f4.read()))
+    wallet_E = import_wallet_from_file(ECC.import_key(f5.read()))
+    wallet_F = import_wallet_from_file(ECC.import_key(f6.read()))
+
+    f1.close()
+    f2.close()
+    f3.close()
+    f4.close()
+    f5.close()
+    f6.close()
+
+    transaction = Transaction(wallet_A, wallet_B.public_key, 20)
     transaction.sign()
 
     node = Node(block_2)

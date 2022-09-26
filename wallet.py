@@ -15,6 +15,13 @@ class Wallet:
         self.address = address
 
 
+def import_wallet_from_file(private_key: ECC.EccKey):
+    public_key = private_key.public_key().export_key(format='DER')
+    _hash = calculate_hash(public_key)
+    address = _hash[-40:]
+    return Wallet(private_key, public_key, address)
+
+
 def initialize_wallet():
     private_key = ECC.generate(curve='P-256')
     # print(private_key.export_key(format='DER'))

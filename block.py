@@ -39,7 +39,7 @@ class Block:
         nonce = 0
         data_to_hash = self.hash + str(nonce)
         hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
-        while hash_to_find[0:3] != "000":
+        while hash_to_find[0:4] != "0000":
             # print(hash_to_find[0:3])
             data_to_hash = self.hash + str(nonce)
             hash_to_find = calculate_hash(data_to_hash.encode('utf-8'))
