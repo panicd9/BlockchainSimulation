@@ -1,15 +1,16 @@
 import json
 
+import requests as requests
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 
-from block import Block
 
 
 class Node:
 
-    def __init__(self, block: Block):
+    def __init__(self, block, ip="127.0.0.1", port=8080):
+        self.base_url = f"http://{ip}:{port}/"
         self.block = block
 
     @staticmethod
@@ -46,3 +47,9 @@ class Node:
 
         for block in blockchain_from_start:
             block.proof_of_work_block()
+
+    def send_transaction(self, transaction_data: dict) -> requests.Response:
+        url = f"{self.base_url}send_transaction"
+        req_return = requests.post(url, json=transaction_data)
+        req_return.raise_for_status()
+        return req_return

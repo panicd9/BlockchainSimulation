@@ -1,4 +1,5 @@
 import base58
+import requests
 from Crypto.PublicKey import ECC, RSA
 import base64
 import secrets
@@ -6,6 +7,8 @@ import secrets
 from tinyec import ec, registry
 
 from cryptography import calculate_hash
+from node import Node
+from transaction import Transaction
 
 
 class Wallet:
@@ -13,7 +16,11 @@ class Wallet:
         self.private_key = private_key
         self.public_key = public_key
         self.address = address
+        self.node = Node(None)
 
+    def send_transaction(self, transaction: Transaction) -> requests.Response:
+        transaction.sign()
+        return self.node.send_transaction(transaction.generate_transaction_data())
 
 def import_wallet_from_file(private_key: ECC.EccKey):
     public_key = private_key.public_key().export_key(format='DER')

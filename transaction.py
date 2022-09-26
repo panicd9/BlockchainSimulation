@@ -4,13 +4,10 @@ from datetime import datetime
 
 from Crypto.Hash import keccak, SHA256
 from Crypto.Signature import DSS
-
 from cryptography import calculate_hash
-from wallet import Wallet
-
 
 class Transaction:
-    def __init__(self, sender: Wallet, receiver_address: bytes, amount: int):
+    def __init__(self, sender, receiver_address: bytes, amount: int):
         self.sender = sender
         self.receiver_address = receiver_address
         self.amount = amount
