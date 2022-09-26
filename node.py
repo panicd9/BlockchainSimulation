@@ -5,6 +5,8 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 
+from otherNode import OtherNode
+from transaction import Transaction
 
 
 class Node:
@@ -12,10 +14,12 @@ class Node:
     def __init__(self, block, ip="127.0.0.1", port=8080):
         self.base_url = f"http://{ip}:{port}/"
         self.block = block
+        self.node_list = [OtherNode("127.0.0.1", 8082), OtherNode("127.0.0.1", 8083)]
 
     @staticmethod
-    def verify_signature(public_key: bytes, signature: bytes, transaction_data: bytes):
+    def verify_signature(public_key: bytes, signature: bytes, transaction: Transaction):
         public_key = ECC.import_key(public_key)
+        transaction_data = bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8'))
         transaction_hash = SHA256.new(transaction_data)
         # print("PUBLIC TEST 1: " + str(public_key))
         # print("HASH TEST 1: " + str(transaction_hash.hexdigest()))
@@ -48,8 +52,15 @@ class Node:
         for block in blockchain_from_start:
             block.proof_of_work_block()
 
-    def send_transaction(self, transaction_data: dict) -> requests.Response:
+    def send_transaction_to_other_node(self, transaction: dict, url: str) -> requests.Response:
         url = f"{self.base_url}send_transaction"
-        req_return = requests.post(url, json=transaction_data)
+        req_return = requests.post(url, json=transaction)
         req_return.raise_for_status()
         return req_return
+
+    def broadcast(self, transaction: dict):
+        for otherNode in self.node_list:
+            try:
+                self.send_transaction_to_other_node(transaction, otherNode.base_url)
+            except requests.ConnectionError:
+                pass

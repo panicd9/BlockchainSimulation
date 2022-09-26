@@ -26,13 +26,13 @@ class Block:
     # @property
     def find_hash(self) -> str:
         block_data = {
-            "transaction_data": self.transactions,
+            "transactions": str(self.transactions),
             "timestamp": self.timestamp,
             "previous_block_cryptographic_hash": self.previous_block_hash
         }
         block_data_bytes = json.dumps(block_data, indent=4).encode('utf-8')
         # block_data_bytes = json.dumps(block_data).encode('utf-8')
-        print(block_data_bytes)
+        # print(block_data_bytes)
         return calculate_hash(block_data_bytes)
 
     def proof_of_work_block(self):

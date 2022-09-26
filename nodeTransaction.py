@@ -6,10 +6,12 @@ from Crypto.Hash import keccak, SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from cryptography import calculate_hash
+from transaction import Transaction
+from utils import address_from_public_key
 
 
-def transaction_object_from_json(transaction_json):
-    transaction = Transaction(None, None, None)
+def nodeTransaction_object_from_json(transaction_json):
+    transaction = NodeTransaction(transaction_json['sender_public_key'])
     transaction.sender = ECC.import_key(transaction_json['sender_public_key'])
     transaction.receiver_address = transaction_json['receiver']
     transaction.amount = transaction_json['amount']
@@ -18,42 +20,30 @@ def transaction_object_from_json(transaction_json):
 
     return transaction
 
-
-class Transaction:
-    def __init__(self, sender, receiver_address: bytes, amount: int):
-        self.sender = sender
-        self.receiver_address = receiver_address
-        self.amount = amount
-        self.timestamp = datetime.now()
+## SENDER IS PUBLIC KEY !!!
+class NodeTransaction:
+    def __init__(self, sender_public_key):
+        self.sender = sender_public_key
+        self.sender_address = address_from_public_key(ECC.import_key(self.sender))
+        self.receiver_address = ""
+        self.amount = ""
+        self.timestamp = ""
         self.signature = ""
 
     def generate_transaction_data(self) -> dict:
         return {
-            "sender": '0x' + str(self.sender.address),
+            "sender": '0x' + self.sender_address,
             "receiver": '0x' + str(self.receiver_address),
             "amount": str(self.amount),
             "timestamp": str(self.timestamp)
         }
 
-    def sign(self) -> str:
-        # convert to bytes for hashing
-        transaction_data = bytearray(json.dumps(self.generate_transaction_data(), indent=4).encode('utf-8'))
-        # print("PODACI TEST 2: " + str(transaction_data))
-        _hash = SHA256.new(transaction_data)
-        # print("HASH TEST 2: " + str(_hash.hexdigest()))
-        # print("javni: " + str(self.sender.public_key))
-        # print("KLJUC 2: " + str(self.sender.private_key))
-        signer = DSS.new(self.sender.private_key, 'fips-186-3')
-        self.signature = signer.sign(_hash)
-        # self.signature = binascii.hexlify(signature).decode("utf-8")
-        # print("POTPIS TEST 2: " + str(self.signature))
-        # print("PRIVAT TEST 2: " + str(self.sender.private_key))
-
     def to_json(self):
         # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')
+        print(self.sender)
         return {
-            "sender_public_key": self.sender,
-            "sender": '0x' + self.sender.address,
+            "sender_public_key": self.sender.export_key(format='PEM'),
+            "sender": '0x' + self.sender_address,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
             "timestamp": self.timestamp,
@@ -63,8 +53,8 @@ class Transaction:
     def __str__(self):
         # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')
         return str({
-            "sender_public_key": self.sender,
-            "sender": '0x' + self.sender.address,
+            "sender_public_key": self.sender.export_key(format='PEM'),
+            "sender": '0x' + self.sender_address,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
             "timestamp": self.timestamp,
