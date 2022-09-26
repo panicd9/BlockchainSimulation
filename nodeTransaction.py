@@ -16,7 +16,7 @@ def nodeTransaction_object_from_json(transaction_json):
     transaction.receiver_address = transaction_json['receiver']
     transaction.amount = transaction_json['amount']
     transaction.timestamp = transaction_json['timestamp']
-    transaction.signature = transaction_json['signature']
+    transaction.signature = binascii.unhexlify(transaction_json['signature'])
 
     return transaction
 
@@ -40,14 +40,14 @@ class NodeTransaction:
 
     def to_json(self):
         # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')
-        print(self.sender)
+        # print(self.sender)
         return {
             "sender_public_key": self.sender.export_key(format='PEM'),
             "sender": '0x' + self.sender_address,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
             "timestamp": self.timestamp,
-            "signature": self.signature
+            "signature": binascii.hexlify(self.signature).decode("utf-8")
         }
 
     def __str__(self):
@@ -58,7 +58,7 @@ class NodeTransaction:
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
             "timestamp": self.timestamp,
-            "signature": self.signature
+            "signature": binascii.hexlify(self.signature).decode("utf-8")
         })
 
     def __repr__(self):

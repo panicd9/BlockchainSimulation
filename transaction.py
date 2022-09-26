@@ -14,7 +14,7 @@ def transaction_object_from_json(transaction_json):
     transaction.receiver_address = transaction_json['receiver']
     transaction.amount = transaction_json['amount']
     transaction.timestamp = transaction_json['timestamp']
-    transaction.signature = transaction_json['signature']
+    transaction.signature = binascii.unhexlify(transaction_json['signature'])
 
     return transaction
 
@@ -45,30 +45,43 @@ class Transaction:
         # print("KLJUC 2: " + str(self.sender.private_key))
         signer = DSS.new(self.sender.private_key, 'fips-186-3')
         self.signature = signer.sign(_hash)
-        # self.signature = binascii.hexlify(signature).decode("utf-8")
+        print(self.signature)
+        # self.signature = binascii.hexlify(self.signature).decode("utf-8")
+        # print(self.signature)
         # print("POTPIS TEST 2: " + str(self.signature))
         # print("PRIVAT TEST 2: " + str(self.sender.private_key))
 
     def to_json(self):
         # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')
+        if self.signature != "":
+            signature = binascii.hexlify(self.signature).decode("utf-8")
+        else:
+            signature = ""
+
         return {
-            "sender_public_key": self.sender,
+            "sender_public_key": self.sender.public_key,
             "sender": '0x' + self.sender.address,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
             "timestamp": self.timestamp,
-            "signature": self.signature
+            "signature": signature
         }
 
     def __str__(self):
         # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')
+        # print(self.signature)
+
+        if self.signature != "":
+            signature = binascii.hexlify(self.signature).decode("utf-8")
+        else:
+            signature = ""
         return str({
             "sender_public_key": self.sender,
             "sender": '0x' + self.sender.address,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
             "timestamp": self.timestamp,
-            "signature": self.signature
+            "signature": signature
         })
 
     def __repr__(self):

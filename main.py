@@ -45,6 +45,7 @@ def transaction_serialization_example():
     wallet_B = import_wallet_from_file(ECC.import_key(f2.read()))
 
     transaction = Transaction(wallet_A, wallet_B.address, 40)
+    transaction.sign()
     return transaction.to_json(), 200
 
 

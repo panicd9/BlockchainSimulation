@@ -34,7 +34,8 @@ class Node:
         # print("PUBLIC TEST 1: " + str(public_key))
         # print("HASH TEST 1: " + str(transaction_hash.hexdigest()))
         # print("KLJUC 1: " + str(public_key))
-        return DSS.new(ECC.import_key(transaction.sender), 'fips-186-3').verify(transaction_hash, transaction.signature)
+        print(transaction.sender)
+        return DSS.new(transaction.sender, 'fips-186-3').verify(transaction_hash, transaction.signature)
 
     def validate_funds(self, sender_address: bytes, amount: int) -> bool:
         sender_balance = 0

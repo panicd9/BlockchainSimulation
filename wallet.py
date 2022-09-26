@@ -23,7 +23,7 @@ class Wallet:
         return self.node.send_transaction(transaction.generate_transaction_data())
 
 def import_wallet_from_file(private_key: ECC.EccKey):
-    public_key = private_key.public_key().export_key(format='DER')
+    public_key = private_key.public_key().export_key(format='PEM')
     _hash = calculate_hash(public_key)
     address = _hash[-40:]
     return Wallet(private_key, public_key, address)
@@ -40,7 +40,8 @@ def initialize_wallet():
     # print(_hash)
     address = _hash[-40:]
     # print('Adresa: ' + address)
-    return Wallet(private_key, public_key, address)
+    public_key_pem = ECC.import_key(public_key).export_key(format='PEM')
+    return Wallet(private_key, public_key_pem, address)
 
 # def initialize_wallet():
 #     ecc_curve = registry.get_curve('secp256r1')
