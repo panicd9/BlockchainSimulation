@@ -34,7 +34,7 @@ if __name__ == "__main__":
         timestamp=timestamp_0
     )
 
-    timestamp_1 = datetime.timestamp(datetime.fromisoformat('2011-11-07 00:05:13.222'))
+    timestamp_1 = datetime.timestamp(datetime.fromisoformat('2011-11-07 00:05:19.222'))
     block_1 = Block(
         transactions=transactions,
         timestamp=timestamp_1,
