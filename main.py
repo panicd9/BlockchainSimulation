@@ -17,12 +17,11 @@ app = Flask(__name__)
 
 @app.route("/send_transaction", methods=['POST'])
 def validate_transaction():
-    transaction = request.json
+    transaction = nodeTransaction_object_from_json(request.json)
     try:
         node = Node(head_block)
-        node.verify_signature(transaction.sender_public_key, transaction.signature,
-                              transaction.generate_transaction_data())
-        node.validate_funds(transaction.sender, transaction.amount)
+        node.verify_signature(transaction)
+        node.validate_funds(transaction.sender_address, transaction.amount)
         node.broadcast(transaction)
     except Exception as e:
         return f'{e}', 400
