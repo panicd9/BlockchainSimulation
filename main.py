@@ -1,4 +1,5 @@
 import json
+import threading
 from types import SimpleNamespace
 
 from flask import Flask, request, app
@@ -13,47 +14,72 @@ from nodeTransaction import nodeTransaction_object_from_json
 from transaction import Transaction, transaction_object_from_json
 from wallet import initialize_wallet, import_wallet_from_file
 
-app = Flask(__name__)
-
-@app.route("/send_transaction", methods=['POST'])
-def send_transaction():
-    transaction = nodeTransaction_object_from_json(request.json)
-    try:
-        # print(transaction)
-        node = Node(head_block)
-        node.verify_signature(transaction)
-        node.validate_funds(transaction.sender_address, transaction.amount)
-        node.broadcast(transaction)
-    except Exception as e:
-        return f'{e}', 400
-    return "Transaction successful", 200
-
-@app.route("/transaction_deserialization_example", methods=['POST'])
-def transaction_deserialization_example():
-    transaction = nodeTransaction_object_from_json(request.json)
-    # transaction = json.loads(request.data, object_hook=lambda d: SimpleNamespace(**d))
-    # print(transaction.sender)
-
-    return transaction.to_json(), 200
-
-@app.route("/transaction_serialization_example", methods=['GET'])
-def transaction_serialization_example():
-    f1 = open('./wallets/wallet_A_private.der', 'rb')
-    f2 = open('./wallets/wallet_B_private.der', 'rb')
-
-
-    wallet_A = import_wallet_from_file(ECC.import_key(f1.read()))
-    wallet_B = import_wallet_from_file(ECC.import_key(f2.read()))
-
-    transaction = Transaction(wallet_A, wallet_B.address, 40)
-    transaction.sign()
-    return transaction.to_json(), 200
+# app = Flask(__name__)
+#
+# @app.route("/send_transaction", methods=['POST'])
+# def send_transaction():
+#     transaction = nodeTransaction_object_from_json(request.json)
+#     try:
+#         # print(transaction)
+#         node = Node(head_block)
+#         node.verify_signature(transaction)
+#         node.validate_funds(transaction.sender_address, transaction.amount)
+#         node.broadcast(transaction)
+#     except Exception as e:
+#         return f'{e}', 400
+#     return "Transaction successful", 200
+#
+# @app.route("/transaction_deserialization_example", methods=['POST'])
+# def transaction_deserialization_example():
+#     transaction = nodeTransaction_object_from_json(request.json)
+#     # transaction = json.loads(request.data, object_hook=lambda d: SimpleNamespace(**d))
+#     # print(transaction.sender)
+#
+#     return transaction.to_json(), 200
+#
+# @app.route("/transaction_serialization_example", methods=['GET'])
+# def transaction_serialization_example():
+#     f1 = open('./wallets/wallet_A_private.der', 'rb')
+#     f2 = open('./wallets/wallet_B_private.der', 'rb')
+#
+#
+#     wallet_A = import_wallet_from_file(ECC.import_key(f1.read()))
+#     wallet_B = import_wallet_from_file(ECC.import_key(f2.read()))
+#
+#     transaction = Transaction(wallet_A, wallet_B.address, 40)
+#     transaction.sign()
+#     return transaction.to_json(), 200
 
 
 if __name__ == "__main__":
 
-    head_block = initialize_blockchain()
-    app.run()
+    head_block, wallets = initialize_blockchain()
+
+    blockchain_from_end = []
+
+    current_block = head_block
+    while current_block:
+        blockchain_from_end.append(current_block)
+        current_block = current_block.previous_block
+
+    blockchain_from_start = list(reversed(blockchain_from_end))
+
+    nodes = []
+    threads = []
+    for i in range(3):
+        nodes.append(Node(head_block, f"Node {i}", wallets[i].address))
+        threads.append(threading.Thread(target=nodes[i].start_pow, args=(blockchain_from_start,)))
+        threads[i].start()
+
+    for thread in threads:
+        thread.join()
+
+
+
+    # for block in blockchain_from_start:
+    #     block.proof_of_work_block()
+
+
     # f1 = open('./wallets/wallet_A_private.der', 'rb')
     # f2 = open('./wallets/wallet_B_private.der', 'rb')
     # f3 = open('./wallets/wallet_C_private.der', 'rb')

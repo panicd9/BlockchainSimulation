@@ -16,7 +16,7 @@ class Wallet:
         self.private_key = private_key
         self.public_key = public_key
         self.address = address
-        self.node = Node(None)
+        self.node = Node(None, None, None)
 
     def send_transaction(self, transaction: Transaction) -> requests.Response:
         transaction.sign()
@@ -24,6 +24,7 @@ class Wallet:
 
 def import_wallet_from_file(private_key: ECC.EccKey):
     public_key = private_key.public_key().export_key(format='DER')
+    # print(private_key.public_key().pointQ.size_in_bits())
     _hash = calculate_hash(public_key)
     address = _hash[-40:]
     public_key_pem = private_key.public_key().export_key(format='PEM')

@@ -27,21 +27,32 @@ class Transaction:
         self.amount = amount
         self.timestamp = datetime.now()
         self.signature = ""
+        self.sign()
 
     def generate_transaction_data(self) -> dict:
+
+        if self.sender != "Coinbase":
+            sender = '0x' + self.sender.address
+        else:
+            sender = "Coinbase"
+
+        # print(sender)
+        # print(self.sender)
         return {
-            "sender": '0x' + str(self.sender.address),
+            "sender": "0x" + sender,
             "receiver": '0x' + str(self.receiver_address),
             "amount": str(self.amount),
             "timestamp": str(self.timestamp)
         }
 
     def sign(self) -> str:
+        if type(self.sender) is str:
+            return
         # convert to bytes for hashing
         transaction_data = bytearray(json.dumps(self.generate_transaction_data(), indent=4).encode('utf-8'))
         # print("PODACI TEST 2: " + str(transaction_data))
-        print(self.sender.public_key)
-        print(transaction_data)
+        # print(self.sender.public_key)
+        # print(transaction_data)
         _hash = SHA256.new(transaction_data)
         # print("HASH TEST 2: " + str(_hash.hexdigest()))
         # print("javni: " + str(self.sender.public_key))
@@ -70,16 +81,21 @@ class Transaction:
         }
 
     def __str__(self):
-        # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')
-        # print(self.signature)
+
+        if self.sender != "Coinbase":
+            sender = '0x' + self.sender.address,
+        else:
+            sender = "Coinbase"
 
         if self.signature != "":
             signature = binascii.hexlify(self.signature).decode("utf-8")
         else:
             signature = ""
+
+
         return str({
             "sender_public_key": self.sender,
-            "sender": '0x' + self.sender.address,
+            "sender": sender,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
             "timestamp": self.timestamp,
