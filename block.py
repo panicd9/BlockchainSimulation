@@ -2,13 +2,11 @@ import copy
 import json
 from typing import List
 
+from constants import REWARD_AMOUNT, DIFFICULTY
 from cryptography import calculate_hash
 from merkle_tree import build_merkle_tree
 from transaction import Transaction
 from transaction_validation import is_transaction_valid
-
-DIFFICULTY = 3
-REWARD_AMOUNT = 10
 
 
 class BlockHeader:
@@ -70,7 +68,6 @@ class Block:
         merkle_root_node = build_merkle_tree(block.transactions)
         block.header.merkle_root = merkle_root_node.value
 
-
         # Include previous block hash!
         if block.previous_block:
             block.header.previous_block_hash = block.previous_block.header.hash
@@ -90,6 +87,7 @@ class Block:
         self.header.nonce = header.nonce
         self.header.hash = hash_to_find
         self.header.merkle_root = merkle_root_node.value
+        self.transactions = block.transactions
 
         if block.previous_block:
             self.header.previous_block_hash = block.previous_block.header.hash
@@ -102,6 +100,6 @@ class Block:
         to_string = "Header: \n\t" + \
                     self.header.to_string() + \
                     "\nTransactions:\n" + \
-                    json.dumps(self.transactions, indent=4) + \
+                    str(self.transactions) + \
                     "\n"
         return to_string

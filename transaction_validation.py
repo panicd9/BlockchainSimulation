@@ -5,8 +5,12 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 
+from constants import REWARD_AMOUNT
+
 
 def verify_signature(transaction):
+    if transaction.sender == "Coinbase":
+        return True
     transaction_data = bytearray(json.dumps(transaction.generate_transaction_data(), indent=4).encode('utf-8'))
     # print(transaction_data)
     transaction_hash = SHA256.new(transaction_data)
@@ -31,6 +35,8 @@ def validate_funds(head_block, sender_address: bytes, amount: int) -> bool:
     current_block = head_block
     while current_block:
         for transaction in current_block.transactions:
+            if transaction.sender == "Coinbase":
+                continue
             if transaction.sender.address == sender_address:
                 sender_balance = sender_balance - transaction.amount
             if transaction.receiver_address == sender_address:
@@ -41,23 +47,31 @@ def validate_funds(head_block, sender_address: bytes, amount: int) -> bool:
     else:
         return False
 
+
 def verify_transaction_id(transaction, head_block):
-    latest_transaction_id = -1
+
     current_block = head_block
     while current_block:
         for t in current_block.transactions:
-            if t.sender.address == transaction.sender.address:
-                latest_transaction_id = t.sender_transaction_id
+            if t.sender.address == transaction.sender.address and t.signature != transaction.signature:
+                if t.sender_transaction_id < transaction.sender_transaction_id:
+                    return True
+                else:
+                    return False
+            else:
+                break
         current_block = current_block.previous_block
-    if latest_transaction_id < transaction.sender_transaction_id:
-        return True
-    else:
-        return False
-
+    # Ako prodjemo kroz sve transakcije do trenutne i ne izadjemo iz funkcije
+    # znaci da nam je to prva transakcija, samim tim je id validan!
+    return True
 
 
 def is_transaction_valid(transaction, head_block):
     # print(transaction.sender)
-    return verify_signature(transaction) and \
-           validate_funds(head_block, transaction.sender.address, transaction.amount)
 
+    is_valid = verify_signature(transaction) and \
+           validate_funds(head_block, transaction.sender.address, transaction.amount) and \
+           verify_transaction_id(transaction, head_block)
+
+    print(is_valid)
+    return is_valid

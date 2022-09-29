@@ -76,6 +76,9 @@ if __name__ == "__main__":
 
 
 
+    for b in blockchain_from_start:
+        print(str(b))
+
     # for block in blockchain_from_start:
     #     block.proof_of_work_block()
 

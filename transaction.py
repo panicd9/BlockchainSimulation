@@ -91,9 +91,11 @@ class Transaction:
         if self.sender != "Coinbase":
             sender = '0x' + self.sender.address,
             sender_transaction_id = self.sender_transaction_id
+            sender_public_key = self.sender.public_key
         else:
             sender = "Coinbase"
             sender_transaction_id = -1
+            sender_public_key = "Coinbase"
 
         if self.signature != "":
             signature = binascii.hexlify(self.signature).decode("utf-8")
@@ -102,7 +104,7 @@ class Transaction:
 
         return str({
             "sender_transaction_id": sender_transaction_id,
-            "sender_public_key": self.sender,
+            "sender_public_key": sender_public_key,
             "sender": sender,
             "receiver": '0x' + self.receiver_address,
             "amount": self.amount,
