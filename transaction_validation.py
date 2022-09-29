@@ -18,9 +18,6 @@ def verify_signature(transaction):
     # print(transaction_hash)
     # print(transaction.sender)
     try:
-        # print(transaction)
-        # print("AAA")
-        # print(type(transaction.signature))
         public_key = ECC.import_key(transaction.sender.public_key)
         DSS.new(public_key, 'fips-186-3').verify(transaction_hash, transaction.signature)
         return True
@@ -44,8 +41,23 @@ def validate_funds(head_block, sender_address: bytes, amount: int) -> bool:
     else:
         return False
 
+def verify_transaction_id(transaction, head_block):
+    latest_transaction_id = -1
+    current_block = head_block
+    while current_block:
+        for t in current_block.transactions:
+            if t.sender.address == transaction.sender.address:
+                latest_transaction_id = t.sender_transaction_id
+        current_block = current_block.previous_block
+    if latest_transaction_id < transaction.sender_transaction_id:
+        return True
+    else:
+        return False
+
+
 
 def is_transaction_valid(transaction, head_block):
     # print(transaction.sender)
     return verify_signature(transaction) and \
            validate_funds(head_block, transaction.sender.address, transaction.amount)
+

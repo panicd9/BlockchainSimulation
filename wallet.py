@@ -13,6 +13,7 @@ from transaction import Transaction
 
 class Wallet:
     def __init__(self, private_key: ECC.EccKey, public_key: bytes, address: base64):
+        self.transaction_id = 0
         self.private_key = private_key
         self.public_key = public_key
         self.address = address

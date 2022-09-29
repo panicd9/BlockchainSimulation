@@ -22,12 +22,18 @@ def transaction_object_from_json(transaction_json):
 
 class Transaction:
     def __init__(self, sender, receiver_address: bytes, amount: int):
+
         self.sender = sender
+        if self.sender != "Coinbase":
+            self.sender_transaction_id = self.sender.transaction_id + 1
+            self.sender.transaction_id = self.sender.transaction_id + 1
+
         self.receiver_address = receiver_address
         self.amount = amount
         self.timestamp = datetime.now()
         self.signature = ""
         self.sign()
+        print(self)
 
     def generate_transaction_data(self) -> dict:
 
@@ -84,16 +90,18 @@ class Transaction:
 
         if self.sender != "Coinbase":
             sender = '0x' + self.sender.address,
+            sender_transaction_id = self.sender_transaction_id
         else:
             sender = "Coinbase"
+            sender_transaction_id = -1
 
         if self.signature != "":
             signature = binascii.hexlify(self.signature).decode("utf-8")
         else:
             signature = ""
 
-
         return str({
+            "sender_transaction_id": sender_transaction_id,
             "sender_public_key": self.sender,
             "sender": sender,
             "receiver": '0x' + self.receiver_address,
