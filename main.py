@@ -74,8 +74,6 @@ if __name__ == "__main__":
     for thread in threads:
         thread.join()
 
-
-
     for b in blockchain_from_start:
         print(str(b))
 

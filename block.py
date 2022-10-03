@@ -17,7 +17,6 @@ class BlockHeader:
         self.timestamp = timestamp
         self.nonce = ""
 
-
     def get_hash(self) -> str:
         header_data = {
             "id": self.id,
@@ -48,7 +47,7 @@ class Block:
         self.previous_block = previous_block
 
         if self.previous_block:
-            self.header.previous_block_hash = previous_block.header.previous_block_hash
+            self.header.previous_block_hash = previous_block.header_hash
 
         self.header_hash = None
 
@@ -58,8 +57,10 @@ class Block:
         valid_transactions = [t for t in self.transactions if is_transaction_valid(t, self)]
         # print(valid_transactions)
         header = copy.deepcopy(self.header)
+
         block = Block(header, valid_transactions, previous_block=self.previous_block)
 
+        print("PRETHODNI HES BLOKA:::: " + str(block.header.previous_block_hash))
         # Reward for lucky miner!
         reward_transaction = Transaction("Coinbase", miner_address, REWARD_AMOUNT)
         block.transactions.append(reward_transaction)
@@ -69,8 +70,8 @@ class Block:
         block.header.merkle_root = merkle_root_node.value
 
         # Include previous block hash!
-        if block.previous_block:
-            block.header.previous_block_hash = block.previous_block.header.hash
+        # if block.previous_block:
+        #     block.header.previous_block_hash = block.previous_block.header.hash
 
         header.nonce = 0
         hash_to_find = calculate_hash(header.to_string())
@@ -85,15 +86,15 @@ class Block:
             header.nonce = header.nonce + 1
 
         self.header.nonce = header.nonce
-        self.header.hash = hash_to_find
+        self.header_hash = hash_to_find
         self.header.merkle_root = merkle_root_node.value
         self.transactions = block.transactions
 
-        if block.previous_block:
-            self.header.previous_block_hash = block.previous_block.header.hash
+        if self.previous_block:
+            self.header.previous_block_hash = block.previous_block.header_hash
 
         print(f"{node_name} found hash!\n"
-              f"Block id: {self.header.id}     Nonce: {self.header.nonce}     Hash: {self.header.hash}\n"
+              f"Block id: {self.header.id}     Nonce: {self.header.nonce}     Hash: {self.header_hash}\n"
               f"Header:{self.header.to_string()}\n")
 
     def __str__(self):

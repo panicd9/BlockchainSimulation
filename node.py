@@ -39,7 +39,7 @@ class Node:
             block.proof_of_work_block()
 
     def start_pow(self, blocks):
-        for i, block in enumerate(blocks):
+        for block in blocks:
             block.proof_of_work_block(node_name=self.name, miner_address=self.miner_address)
 
     def send_transaction_to_other_node(self, transaction: nodeTransaction, url: str) -> requests.Response:

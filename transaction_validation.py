@@ -73,5 +73,4 @@ def is_transaction_valid(transaction, head_block):
            validate_funds(head_block, transaction.sender.address, transaction.amount) and \
            verify_transaction_id(transaction, head_block)
 
-    print(is_valid)
     return is_valid

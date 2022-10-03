@@ -6,6 +6,7 @@ from Crypto.Hash import keccak, SHA256
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS
 from cryptography import calculate_hash
+from wallet import Wallet
 
 
 def transaction_object_from_json(transaction_json):
@@ -21,29 +22,25 @@ def transaction_object_from_json(transaction_json):
 
 
 class Transaction:
-    def __init__(self, sender, receiver_address: bytes, amount: int):
+    def __init__(self, sender: Wallet, receiver_address: bytes, amount: int):
 
         self.sender = sender
         if self.sender != "Coinbase":
+            # redni broj transakcije svakog Wallet-a
             self.sender_transaction_id = self.sender.transaction_id + 1
+            # povecamo taj broj za 1
             self.sender.transaction_id = self.sender.transaction_id + 1
-
         self.receiver_address = receiver_address
         self.amount = amount
         self.timestamp = datetime.now()
         self.signature = ""
         self.sign()
-        print(self)
 
     def generate_transaction_data(self) -> dict:
-
         if self.sender != "Coinbase":
             sender = '0x' + self.sender.address
         else:
             sender = "Coinbase"
-
-        # print(sender)
-        # print(self.sender)
         return {
             "sender": "0x" + sender,
             "receiver": '0x' + str(self.receiver_address),
@@ -52,24 +49,13 @@ class Transaction:
         }
 
     def sign(self) -> str:
-        if type(self.sender) is str:
+        if self.sender == "Coinbase":
             return
-        # convert to bytes for hashing
         transaction_data = bytearray(json.dumps(self.generate_transaction_data(), indent=4).encode('utf-8'))
-        # print("PODACI TEST 2: " + str(transaction_data))
-        # print(self.sender.public_key)
-        # print(transaction_data)
         _hash = SHA256.new(transaction_data)
-        # print("HASH TEST 2: " + str(_hash.hexdigest()))
-        # print("javni: " + str(self.sender.public_key))
-        # print("KLJUC 2: " + str(self.sender.private_key))
         signer = DSS.new(self.sender.private_key, 'fips-186-3')
         self.signature = signer.sign(_hash)
-        # print(self.signature)
-        # self.signature = binascii.hexlify(self.signature).decode("utf-8")
-        # print(self.signature)
-        # print("POTPIS TEST 2: " + str(self.signature))
-        # print("PRIVAT TEST 2: " + str(self.sender.private_key))
+
 
     def to_json(self):
         # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')
@@ -89,7 +75,7 @@ class Transaction:
     def __str__(self):
 
         if self.sender != "Coinbase":
-            sender = '0x' + self.sender.address,
+            sender = '0x' + self.sender.address
             sender_transaction_id = self.sender_transaction_id
             sender_public_key = self.sender.public_key
         else:

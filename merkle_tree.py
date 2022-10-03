@@ -45,15 +45,15 @@ def is_power_of_2(number_of_leaves: int) -> bool:
     return math.log2(number_of_leaves).is_integer()
 
 
-def fill_leaves(nodes):
-    number_of_leaves = len(nodes)
+def fill_leaves(leaves):
+    number_of_leaves = len(leaves)
     if is_power_of_2(number_of_leaves):
-        return nodes
+        return leaves
     filled_number_of_leaves = 2 ** compute_tree_depth(number_of_leaves)
     if number_of_leaves % 2 == 0:
         for i in range(number_of_leaves, filled_number_of_leaves, 2):
-            nodes = nodes + [nodes[-2], nodes[-1]]
+            leaves = leaves + [leaves[-2], leaves[-1]]
     else:
         for i in range(number_of_leaves, filled_number_of_leaves):
-            nodes.append(nodes[-1])
-    return nodes
+            leaves.append(leaves[-1])
+    return leaves
