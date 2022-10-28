@@ -2,23 +2,10 @@ import binascii
 import json
 from datetime import datetime
 
-from Crypto.Hash import keccak, SHA256
-from Crypto.PublicKey import ECC
+from Crypto.Hash import SHA256
 from Crypto.Signature import DSS
-from cryptography import calculate_hash
+
 from wallet import Wallet
-
-
-def transaction_object_from_json(transaction_json):
-    transaction = Transaction(None, None, None)
-    print(transaction_json['sender_public_key'])
-    transaction.sender = ECC.import_key(transaction_json['sender_public_key'])
-    transaction.receiver_address = transaction_json['receiver'][2:]
-    transaction.amount = transaction_json['amount']
-    transaction.timestamp = datetime.strptime(transaction_json['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
-    transaction.signature = binascii.unhexlify(transaction_json['signature'])
-
-    return transaction
 
 
 class Transaction:
@@ -55,7 +42,6 @@ class Transaction:
         _hash = SHA256.new(transaction_data)
         signer = DSS.new(self.sender.private_key, 'fips-186-3')
         self.signature = signer.sign(_hash)
-
 
     def to_json(self):
         # public_key_ascii = ECC.import_key(self.sender.public_key).export_key(format='PEM')

@@ -1,25 +1,7 @@
 import binascii
-import json
-from datetime import datetime
-
-from Crypto.Hash import keccak, SHA256
 from Crypto.PublicKey import ECC
-from Crypto.Signature import DSS
-from cryptography import calculate_hash
-from transaction import Transaction
 from utils import address_from_public_key
 
-
-def nodeTransaction_object_from_json(transaction_json):
-    transaction = NodeTransaction(transaction_json['sender_public_key'])
-    # print(transaction_json['sender_public_key'])
-    transaction.sender = ECC.import_key(transaction_json['sender_public_key'])
-    transaction.receiver_address = transaction_json['receiver'][2:]
-    transaction.amount = transaction_json['amount']
-    transaction.timestamp = datetime.strptime(transaction_json['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
-    transaction.signature = binascii.unhexlify(transaction_json['signature'])
-
-    return transaction
 
 ## SENDER IS PUBLIC KEY !!!
 class NodeTransaction:
