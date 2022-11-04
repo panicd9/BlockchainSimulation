@@ -1,10 +1,6 @@
-# Blockchain
-Proof of work python blockchain implementation
+# Blockchain Simulator
+Bachelor’s Thesis: "Blockchain Simulator for Decentralized Digital Currency"  
 
-Block✔  
-Blockchain✔  
-Proof of work  
-Merkle tree  
-RSA/ECC cryptography  
-Transactions  
-Decentralization  
+Proof-of-work python blockchain implementation using ECC cryptography  
+
+Faculty of Technical Sciences, University of Novi Sad, 2022.
